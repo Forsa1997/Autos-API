@@ -1,16 +1,19 @@
 package de.volkswagen.autos;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -21,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AutosControllerTest {
 
 // POST: /api/autos
-// POST: /api/autos/{vin} returns created automobile
+
 // POST: /api/autos/{vin} returns error message due to bad request (400)
 // GET: /api/autos/{vin}
 // GET: /api/autos/{vin} returns the requested automobile
@@ -39,6 +42,8 @@ public class AutosControllerTest {
 
     @MockBean
     AutosService autosService;
+
+    ObjectMapper mapper = new ObjectMapper();
 
     // GET: /api/autos
     @Test
@@ -103,6 +108,19 @@ public class AutosControllerTest {
                 .andExpect(jsonPath("$.automobiles", hasSize(5)));
     }
 
+
+    @Test
+    @DisplayName("POST: /api/autos/{vin} returns created automobile")
+    void addAutoTest() throws Exception {
+        Automobile automobile = new Automobile(1967, "Ford", "Mustang", "AABBCC");
+        when(autosService.addAuto(any(Automobile.class))).thenReturn(automobile);
+        // String json = "{\"year\":1967,\"make\":\"Ford\",\"model\":\"Mustang\",\"color\":null,\"owner\":null,\"vin\":\"AABBCC\"}";
+        mockMvc.perform(post("/api/autos").contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(automobile)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("make").value("Ford"));
+    }
 
 }
 
