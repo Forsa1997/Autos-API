@@ -32,4 +32,4 @@ jobs:
     - name: Giving Permission
       run: chmod +x gradlew    
     - name: Run gradle task
-      run: /gradlew test
+      run: gradlew test
