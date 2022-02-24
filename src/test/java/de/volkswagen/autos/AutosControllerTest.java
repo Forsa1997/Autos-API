@@ -25,7 +25,7 @@ public class AutosControllerTest {
 
 // POST: /api/autos
 
-// POST: /api/autos/{vin} returns error message due to bad request (400)
+
 // GET: /api/autos/{vin}
 // GET: /api/autos/{vin} returns the requested automobile
 // GET: /api/autos/{vin} returns not content auto not found
@@ -58,7 +58,6 @@ public class AutosControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.automobiles", hasSize(5)));
     }
-
 
     @Test
     @DisplayName("GET: /api/autos returns 204 no autos found")
@@ -108,7 +107,6 @@ public class AutosControllerTest {
                 .andExpect(jsonPath("$.automobiles", hasSize(5)));
     }
 
-
     @Test
     @DisplayName("POST: /api/autos/{vin} returns created automobile")
     void addAutoTest() throws Exception {
@@ -120,6 +118,17 @@ public class AutosControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("make").value("Ford"));
+    }
+
+    @Test
+    @DisplayName("POST: /api/autos/{vin} returns error message due to bad request (400)")
+    void addAutoThrowsException() throws Exception {
+        when(autosService.addAuto(any(Automobile.class))).thenThrow(InvalidAutoException.class);
+        String json = "{\"year\":1967,\"make\":\"Ford\",\"model\":\"Mustang\",\"color\":null,\"owner\":null,\"vin\":\"AABBCC\"}";
+        mockMvc.perform(post("/api/autos").contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 
 }
