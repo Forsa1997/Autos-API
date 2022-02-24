@@ -20,7 +20,11 @@ public class AutosController {
         AutosList autosList;
         if (color == null && make == null) {
             autosList = autosService.getAutos();
-        } else {
+        } else if(make == null){
+            autosList = autosService.getAutos(color);
+        } else if(color == null){
+            autosList = autosService.getAutos(make);
+        }else {
             autosList = autosService.getAutos(color, make);
         }
         return autosList.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(autosList);

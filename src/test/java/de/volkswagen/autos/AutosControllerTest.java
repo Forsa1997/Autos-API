@@ -17,12 +17,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-// GET: /api/autos
-// GET: /api/autos returns list of all autos in db
-// GET: /api/autos returns 204 no autos found
-// GET: /api/autos?color=RED returns red cars
-// GET: /api/autos?make=Ford returns fords
-// GET: /api/autos?make=Ford&color=GREEN
+@WebMvcTest(AutosController.class)
+public class AutosControllerTest {
+
 // POST: /api/autos
 // POST: /api/autos/{vin} returns created automobile
 // POST: /api/autos/{vin} returns error message due to bad request (400)
@@ -37,15 +34,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 // DELETE: /api/autos/{vin} returns 202, delete request accepted
 // DELETE: /api/autos/{vin} returns 204, vehicle not found
 
-@WebMvcTest(AutosController.class)
-public class AutosControllerTest {
-
     @Autowired
     MockMvc mockMvc;
 
     @MockBean
     AutosService autosService;
 
+    // GET: /api/autos
     @Test
     @DisplayName("GET: /api/autos returns list of all autos in db")
     void getAutosTest() throws Exception {
@@ -71,7 +66,7 @@ public class AutosControllerTest {
 
     @Test
     @DisplayName("GET: /api/autos?color=RED&make=Ford returns red fords")
-    void getAutosSearchParamsTest() throws Exception {
+    void getAutosTwoSearchParamsTest() throws Exception {
         List<Automobile> automobiles = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             automobiles.add(new Automobile(1900 + 1, "Ford", "Mustang", "AABB" + 1));
@@ -82,4 +77,34 @@ public class AutosControllerTest {
                 .andExpect(jsonPath("$.automobiles", hasSize(5)));
     }
 
+    @Test
+    @DisplayName("GET: /api/autos?color=RED returns red cars")
+    void getAutosSearchRedCarsTest() throws Exception {
+        List<Automobile> automobiles = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            automobiles.add(new Automobile(1900 + 1, "Ford", "Mustang", "AABB" + 1));
+        }
+        when(autosService.getAutos(anyString())).thenReturn(new AutosList(automobiles));
+        mockMvc.perform(get("/api/autos?color=RED"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.automobiles", hasSize(5)));
+    }
+
+    @Test
+    @DisplayName("GET: /api/autos?make=Ford returns fords")
+    void getAutosSearchFordCarsTest() throws Exception {
+        List<Automobile> automobiles = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            automobiles.add(new Automobile(1900 + 1, "Ford", "Mustang", "AABB" + 1));
+        }
+        when(autosService.getAutos(anyString())).thenReturn(new AutosList(automobiles));
+        mockMvc.perform(get("/api/autos?make=Ford"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.automobiles", hasSize(5)));
+    }
+
+
 }
+
+
+
