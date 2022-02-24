@@ -13,6 +13,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 // GET: /api/autos
@@ -46,7 +47,7 @@ public class AutosControllerTest {
 
     @Test
     @DisplayName("GET: /api/autos returns list of all autos in db")
-    void getAutosTest() throws Exception{
+    void getAutosTest() throws Exception {
         List<Automobile> automobiles = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             automobiles.add(new Automobile(1900 + 1, "Ford", "Mustang", "AABB" + 1));
@@ -58,5 +59,13 @@ public class AutosControllerTest {
     }
 
 
+    @Test
+    @DisplayName("GET: /api/autos returns 204 no autos found")
+    void getAutosNoParamTest() throws Exception {
+        when(autosService.getAutos()).thenReturn(new AutosList());
+        mockMvc.perform(get("/api/autos"))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+    }
 
 }
