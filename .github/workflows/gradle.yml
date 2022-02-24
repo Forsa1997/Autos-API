@@ -30,6 +30,6 @@ jobs:
       with:
         arguments: build
     - name: givingrights
-      run: chmod +x /gradlew
+      run: chmod +x gradlew
     - name: Execute Gradle task
       uses: OrangeLabsMoe/gradle-actions@v5.0-openjdk-14
