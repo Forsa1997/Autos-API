@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.print.attribute.standard.Media;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class AutosControllerTest {
 // GET: /api/autos/{vin}
 // GET: /api/autos/{vin} returns not content auto not found
 // PATCH: /api/autos{vin}
-// PATCH: /api/autos/{vin} returns patched automobile
+
 // PATCH: /api/autos/{vin} returns no content auto not found
 // PATCH: /api/autos/{vin} returns 400 bad request (no payload, no changes, or already done)
 // DELETE: /api/autos/{vin}
@@ -139,7 +140,18 @@ public class AutosControllerTest {
                 .andExpect(jsonPath("vin").value(automobile.getVin()));
     }
 
-
+    @Test
+    @DisplayName("PATCH: /api/autos/{vin} returns patched automobile")
+    void updateAutoWithObjectReturnAuto() throws Exception {
+        Automobile automobile = new Automobile(1967, "Ford", "Mustang", "AABBCC");
+        when(autosService.updateAuto(anyString(), anyString(), anyString())).thenReturn(automobile);
+        mockMvc.perform(patch("/api/autos/" + automobile.getVin())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"color\":\"RED\",\"owner\":\"Bob\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("color").value("RED"))
+                .andExpect(jsonPath("owner").value("Bob"));
+    }
 
 }
 
