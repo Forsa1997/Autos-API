@@ -28,4 +28,7 @@ public class AutosService {
     public Automobile updateAuto(String vin, String color, String owner) {
         return null;
     }
+
+    public void deleteAuto(String vin) {
+    }
 }
