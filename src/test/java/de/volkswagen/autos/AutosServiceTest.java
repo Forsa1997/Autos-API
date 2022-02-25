@@ -59,7 +59,14 @@ class AutosServiceTest {
     }
 
     @Test
-    void getAuto() {
+    void getAutoWithVinReturnsAuto() {
+        Automobile automobile = new Automobile(1967, "Ford", "Mustang", "AABBCC");
+        automobile.setColor("RED");
+        when(autosRepository.findByVin(anyString()))
+                .thenReturn(java.util.Optional.of(automobile));
+        Automobile auto = autosService.getAuto(automobile.getVin());
+        assertThat(auto).isNotNull();
+        assertThat(auto.getVin()).isEqualTo(automobile.getVin());
     }
 
     @Test
