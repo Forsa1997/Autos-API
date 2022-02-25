@@ -3,6 +3,8 @@ package de.volkswagen.autos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AutosService {
 
@@ -20,6 +22,10 @@ public class AutosService {
     }
 
     public AutosList getAutos(String color, String make) {
+        List<Automobile> automobiles = autosRepository.findByColorContainsAndMakeContains(color, make);
+        if(!automobiles.isEmpty()){
+            return new AutosList(automobiles);
+        }
         return null;
     }
 
