@@ -27,7 +27,6 @@ public class AutosControllerTest {
 
 
 // GET: /api/autos/{vin}
-// GET: /api/autos/{vin} returns the requested automobile
 // GET: /api/autos/{vin} returns not content auto not found
 // PATCH: /api/autos{vin}
 // PATCH: /api/autos/{vin} returns patched automobile
@@ -112,7 +111,6 @@ public class AutosControllerTest {
     void addAutoTest() throws Exception {
         Automobile automobile = new Automobile(1967, "Ford", "Mustang", "AABBCC");
         when(autosService.addAuto(any(Automobile.class))).thenReturn(automobile);
-        // String json = "{\"year\":1967,\"make\":\"Ford\",\"model\":\"Mustang\",\"color\":null,\"owner\":null,\"vin\":\"AABBCC\"}";
         mockMvc.perform(post("/api/autos").contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(automobile)))
                 .andDo(print())
@@ -130,6 +128,18 @@ public class AutosControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @DisplayName("GET: /api/autos/{vin} returns the requested automobile")
+    void getAutoWithVinReturnAutoTest() throws Exception {
+        Automobile automobile = new Automobile(1967, "Ford", "Mustang", "AABBCC");
+        when(autosService.getAuto(anyString())).thenReturn(automobile);
+        mockMvc.perform(get("/api/autos/"+automobile.getVin()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("vin").value(automobile.getVin()));
+    }
+
+
 
 }
 
