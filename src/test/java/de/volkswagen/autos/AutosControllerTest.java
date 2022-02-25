@@ -16,16 +16,13 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AutosController.class)
 public class AutosControllerTest {
-
-
 
 
 // GET: /api/autos/{vin}
@@ -36,7 +33,7 @@ public class AutosControllerTest {
 // PATCH: /api/autos/{vin} returns 400 bad request (no payload, no changes, or already done)
 
 
-// DELETE: /api/autos/{vin} returns 204, vehicle not found
+
 
     @Autowired
     MockMvc mockMvc;
@@ -113,7 +110,7 @@ public class AutosControllerTest {
     void getAutoWithVinReturnAutoTest() throws Exception {
         Automobile automobile = new Automobile(1967, "Ford", "Mustang", "AABBCC");
         when(autosService.getAuto(anyString())).thenReturn(automobile);
-        mockMvc.perform(get("/api/autos/"+automobile.getVin()))
+        mockMvc.perform(get("/api/autos/" + automobile.getVin()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("vin").value(automobile.getVin()));
     }
@@ -149,8 +146,8 @@ public class AutosControllerTest {
         Automobile automobile = new Automobile(1967, "Ford", "Mustang", "AABBCC");
         when(autosService.updateAuto(anyString(), anyString(), anyString())).thenReturn(automobile);
         mockMvc.perform(patch("/api/autos/" + automobile.getVin())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"color\":\"RED\",\"owner\":\"Bob\"}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"color\":\"RED\",\"owner\":\"Bob\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("color").value("RED"))
                 .andExpect(jsonPath("owner").value("Bob"));
@@ -165,6 +162,13 @@ public class AutosControllerTest {
         verify(autosService).deleteAuto(anyString());
     }
 
+    @Test
+    @DisplayName("DELETE: /api/autos/{vin} returns 204, vehicle not found")
+    void deleteAutoWithVinNotExistsReturnNoContent() throws Exception {
+        doThrow(new AutoNotFoundException()).when(autosService).deleteAuto(anyString());
+        mockMvc.perform(delete("/api/autos/AABBCC"))
+                .andExpect(status().isNoContent());
+    }
 }
 
 
